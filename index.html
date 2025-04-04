@@ -1,49 +1,80 @@
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <title>Snake Game</title>
-        <link rel="stylesheet" href="style.css" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="style.css" />
+    
+    <!-- SDKs de Firebase -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+      import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+      import { getAuth, signInWithPopup, GithubAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
       
-        <!-- SDKs de Firebase -->
-        <script type="module">
-          import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-          import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-      
-          // Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyAzn1VrP1bY6h-kDbPD_6hbR1SmjNUWzKA",
-  authDomain: "taller1-e4a59.firebaseapp.com",
-  projectId: "taller1-e4a59",
-  storageBucket: "taller1-e4a59.firebasestorage.app",
-  messagingSenderId: "989644443398",
-  appId: "1:989644443398:web:d91e2e513a481533cb1887"
-};
+      const firebaseConfig = {
+        apiKey: "AIzaSyAzn1VrP1bY6h-kDbPD_6hbR1SmjNUWzKA",
+        authDomain: "taller1-e4a59.firebaseapp.com",
+        projectId: "taller1-e4a59",
+        storageBucket: "taller1-e4a59.firebasestorage.app",
+        messagingSenderId: "989644443398",
+        appId: "1:989644443398:web:d91e2e513a481533cb1887"
+      };
 
+      // Inicializar Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth();
+
+      // Configurar proveedor de GitHub
+      const provider = new GithubAuthProvider();
       
-          const app = initializeApp(firebaseConfig);
-          window.db = getFirestore(app); // hacemos que la base esté accesible globalmente
-        </script>
-      </head>      
-      <body>
-        <h1>🐍 Snake</h1>
-        <div class="scoreboard">
-          <p id="current-score">🍎 Puntaje: 0</p>
-          <p id="record">🥇 Récord: 0</p> <!-- Ahora solo hay uno -->
-        </div>
-        
-        <canvas id="game" width="300" height="300"></canvas>
+      // Función de inicio de sesión con GitHub
+      async function signInWithGitHub() {
+        try {
+          const result = await signInWithPopup(auth, provider);
+          const user = result.user;
+          document.getElementById('current-user').textContent = `Bienvenido, ${user.displayName}`;
+          loadRecord();
+        } catch (error) {
+          console.error("Error al iniciar sesión con GitHub:", error.message);
+        }
+      }
+
+      // Función para cerrar sesión
+      function signOutUser() {
+        signOut(auth).then(() => {
+          document.getElementById('current-user').textContent = "Usuario desconectado";
+          console.log("Usuario cerrado sesión");
+        }).catch((error) => {
+          console.error("Error al cerrar sesión:", error);
+        });
+      }
       
-        <div class="controls">
-          <button class="btn" onclick="changeDirection('up')">⬆️</button><br>
-          <button class="btn" onclick="changeDirection('left')">⬅️</button>
-          <button class="btn" onclick="changeDirection('down')">⬇️</button>
-          <button class="btn" onclick="changeDirection('right')">➡️</button>
-        </div>
-      
-        <script src="script.js"></script>
-      </body>
-      
-</body>
+      window.db = db;
+    </script>
+  </head>
+  <body>
+    <h1>🐍 Snake</h1>
+    <div class="scoreboard">
+      <p id="current-score">🍎 Puntaje: 0</p>
+      <p id="record">🥇 Récord: 0</p> <!-- Ahora solo hay uno -->
+    </div>
+    
+    <p id="current-user">Usuario desconectado</p> <!-- Mostrar el nombre del usuario aquí -->
+    
+    <div class="controls">
+      <button class="btn" onclick="changeDirection('up')">⬆️</button><br>
+      <button class="btn" onclick="changeDirection('left')">⬅️</button>
+      <button class="btn" onclick="changeDirection('down')">⬇️</button>
+      <button class="btn" onclick="changeDirection('right')">➡️</button>
+    </div>
+    
+    <button onclick="signInWithGitHub()">Iniciar sesión con GitHub</button> <!-- Botón para iniciar sesión -->
+    <button onclick="signOutUser()">Cerrar sesión</button> <!-- Botón para cerrar sesión -->
+
+    <canvas id="game" width="300" height="300"></canvas>
+
+    <script src="script.js"></script>
+  </body>
 </html>

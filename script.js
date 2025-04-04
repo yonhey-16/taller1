@@ -15,6 +15,7 @@ let score = 0;
 let highScore = 0;
 
 const recordElement = document.getElementById('record'); // Obtener el elemento correcto
+const userElement = document.getElementById('current-user'); // Mostrar el usuario actual
 
 // === Cargar récord desde Firebase ===
 async function loadRecord() {
@@ -115,3 +116,29 @@ function draw() {
 loadRecord().then(() => {
   setInterval(draw, 100);
 });
+
+// === Función de autenticación con GitHub ===
+async function signInWithGitHub() {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+
+    // Mostrar el nombre del usuario en la interfaz
+    userElement.textContent = `Bienvenido, ${user.displayName}`;
+    
+    // Cargar el récord desde Firebase
+    loadRecord();
+  } catch (error) {
+    console.error("Error al iniciar sesión con GitHub:", error.message);
+  }
+}
+
+// === Función de cerrar sesión ===
+function signOutUser() {
+  signOut(auth).then(() => {
+    userElement.textContent = "Usuario desconectado";
+    console.log("Usuario cerrado sesión");
+  }).catch((error) => {
+    console.error("Error al cerrar sesión:", error);
+  });
+}
