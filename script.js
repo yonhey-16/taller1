@@ -27,7 +27,7 @@ async function loadRecord() {
   }
 }
 
-// === Guardar nuevo récord ===
+// === Guardar y actualizar récord en pantalla ===
 async function saveRecord(newScore) {
   if (newScore > highScore) {
     highScore = newScore;
@@ -83,7 +83,14 @@ function draw() {
 
   if (head.x === food.x && head.y === food.y) {
     score++;
-    document.getElementById('current-score').textContent = `🍎 Puntaje: ${score}`; // ACTUALIZA EL PUNTAJE
+    document.getElementById('current-score').textContent = `🍎 Puntaje: ${score}`;
+
+    // Si el puntaje actual supera el récord, lo actualizamos en pantalla
+    if (score > highScore) {
+      highScore = score;
+      document.getElementById('record').textContent = `🥇 Récord: ${highScore}`;
+    }
+
     food = {
       x: Math.floor(Math.random() * canvasSize),
       y: Math.floor(Math.random() * canvasSize),
