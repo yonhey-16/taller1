@@ -39,4 +39,11 @@ body {
       display: none;
     }
   }
+  .scoreboard {
+    display: flex;
+    gap: 20px;
+    font-size: 18px;
+    margin-top: 5px;
+  }
+  
   
