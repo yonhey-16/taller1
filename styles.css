@@ -1,0 +1,42 @@
+body {
+    margin: 0;
+    background: #111;
+    color: white;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  canvas {
+    background: #222;
+    margin-top: 10px;
+    touch-action: none;
+  }
+  
+  .controls {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .btn {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+    background: #444;
+    color: white;
+    border: none;
+    border-radius: 10px;
+  }
+  
+  @media (min-width: 768px) {
+    .controls {
+      display: none;
+    }
+  }
+  
