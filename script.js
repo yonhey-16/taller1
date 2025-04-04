@@ -14,16 +14,22 @@ let gameOver = false;
 let score = 0;
 let highScore = 0;
 
+const recordElement = document.getElementById('record'); // Obtener el elemento correcto
+
 // === Cargar récord desde Firebase ===
 async function loadRecord() {
-  const docRef = doc(db, "snake", "record");
-  const docSnap = await getDoc(docRef);
+  try {
+    const docRef = doc(db, "snake", "record");
+    const docSnap = await getDoc(docRef);
 
-  if (docSnap.exists()) {
-    highScore = docSnap.data().highScore || 0;
-    document.getElementById('record').textContent = `🥇 Récord: ${highScore}`;
-  } else {
-    await setDoc(docRef, { highScore: 0 });
+    if (docSnap.exists()) {
+      highScore = docSnap.data().highScore || 0;
+      recordElement.textContent = `🥇 Récord: ${highScore}`;
+    } else {
+      await setDoc(docRef, { highScore: 0 });
+    }
+  } catch (error) {
+    console.error("Error al cargar el récord:", error);
   }
 }
 
@@ -32,7 +38,7 @@ async function saveRecord(newScore) {
   if (newScore > highScore) {
     highScore = newScore;
     await setDoc(doc(db, "snake", "record"), { highScore });
-    document.getElementById('record').textContent = `🥇 Récord: ${highScore}`;
+    recordElement.textContent = `🥇 Récord: ${highScore}`;
   }
 }
 
@@ -88,7 +94,7 @@ function draw() {
     // Si el puntaje actual supera el récord, lo actualizamos en pantalla
     if (score > highScore) {
       highScore = score;
-      document.getElementById('record').textContent = `🥇 Récord: ${highScore}`;
+      recordElement.textContent = `🥇 Récord: ${highScore}`;
     }
 
     food = {
@@ -106,5 +112,6 @@ function draw() {
 }
 
 // === Iniciar juego ===
-loadRecord();
-setInterval(draw, 100);
+loadRecord().then(() => {
+  setInterval(draw, 100);
+});
