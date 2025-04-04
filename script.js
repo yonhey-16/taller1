@@ -1,31 +1,27 @@
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
+let score = 0;
+let highScore = 0;
 
-const box = 15;
-const canvasSize = 20;
+async function loadRecord() {
+  const docRef = doc(db, "snake", "record");
+  const docSnap = await getDoc(docRef);
 
-let snake = [{ x: 9, y: 9 }];
-let food = {
-  x: Math.floor(Math.random() * canvasSize),
-  y: Math.floor(Math.random() * canvasSize),
-};
-
-let direction = 'right';
-let gameOver = false;
-
-function changeDirection(dir) {
-  if (dir === 'up' && direction !== 'down') direction = 'up';
-  if (dir === 'down' && direction !== 'up') direction = 'down';
-  if (dir === 'left' && direction !== 'right') direction = 'left';
-  if (dir === 'right' && direction !== 'left') direction = 'right';
+  if (docSnap.exists()) {
+    highScore = docSnap.data().highScore || 0;
+    document.getElementById('record').textContent = `🥇 Récord: ${highScore}`;
+  } else {
+    await setDoc(docRef, { highScore: 0 });
+  }
 }
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowUp') changeDirection('up');
-  if (e.key === 'ArrowDown') changeDirection('down');
-  if (e.key === 'ArrowLeft') changeDirection('left');
-  if (e.key === 'ArrowRight') changeDirection('right');
-});
+async function saveRecord(newScore) {
+  if (newScore > highScore) {
+    highScore = newScore;
+    await setDoc(doc(db, "snake", "record"), { highScore });
+    document.getElementById('record').textContent = `🥇 Récord: ${highScore}`;
+  }
+}
+
+loadRecord(); // cargar al iniciar el juego
 
 function draw() {
   if (gameOver) return;
@@ -48,6 +44,7 @@ function draw() {
     snake.some(s => s.x === head.x && s.y === head.y)
   ) {
     gameOver = true;
+    saveRecord(score); // guarda récord si corresponde
     alert("💀 Game Over!");
     location.reload();
     return;
@@ -56,6 +53,7 @@ function draw() {
   snake.unshift(head);
 
   if (head.x === food.x && head.y === food.y) {
+    score++;
     food = {
       x: Math.floor(Math.random() * canvasSize),
       y: Math.floor(Math.random() * canvasSize),
@@ -69,5 +67,3 @@ function draw() {
     ctx.fillRect(s.x * box, s.y * box, box - 1, box - 1);
   });
 }
-
-setInterval(draw, 100);
