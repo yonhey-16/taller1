@@ -1,4 +1,3 @@
-// === Variables y canvas ===
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 
@@ -68,14 +67,13 @@ function draw() {
   if (direction === 'left') head.x--;
   if (direction === 'right') head.x++;
 
-  // Colisión = game over
   if (
     head.x < 0 || head.x >= canvasSize ||
     head.y < 0 || head.y >= canvasSize ||
     snake.some(s => s.x === head.x && s.y === head.y)
   ) {
     gameOver = true;
-    saveRecord(score); // guarda récord si corresponde
+    saveRecord(score);
     alert("💀 Game Over!");
     location.reload();
     return;
@@ -100,6 +98,6 @@ function draw() {
   });
 }
 
-// === Inicializar juego ===
+// === Iniciar juego ===
 loadRecord();
 setInterval(draw, 100);
