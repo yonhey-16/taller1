@@ -83,7 +83,7 @@ function draw() {
 
   if (head.x === food.x && head.y === food.y) {
     score++;
-    document.getElementById('current-score').textContent = `🍎 Puntaje: ${score}`;
+    document.getElementById('current-score').textContent = `🍎 Puntaje: ${score}`; // ACTUALIZA EL PUNTAJE
     food = {
       x: Math.floor(Math.random() * canvasSize),
       y: Math.floor(Math.random() * canvasSize),
