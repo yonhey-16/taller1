@@ -24,7 +24,8 @@ async function loadRecord() {
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
-      highScore = docSnap.data().highScore || 0;
+      const data = docSnap.data();
+      highScore = data.highScore || 0;
       recordElement.textContent = `🥇 Récord: ${highScore}`;
     } else {
       await setDoc(docRef, { highScore: 0 });
@@ -34,7 +35,7 @@ async function loadRecord() {
   }
 }
 
-// === Guardar y actualizar récord en pantalla ===
+// === Guardar y actualizar récord en Firebase ===
 async function saveRecord(newScore) {
   if (newScore > highScore) {
     highScore = newScore;
