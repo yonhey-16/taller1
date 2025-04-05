@@ -10,21 +10,21 @@ body {
     overflow: hidden;
   }
   
-  canvas {
+canvas {
     background: #222;
     margin-top: 10px;
     touch-action: none;
-  }
+}
   
-  .controls {
+.controls {
     margin-top: 20px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
-  }
+}
   
-  .btn {
+.btn {
     width: 60px;
     height: 60px;
     font-size: 24px;
@@ -32,18 +32,17 @@ body {
     color: white;
     border: none;
     border-radius: 10px;
-  }
+}
   
-  @media (min-width: 768px) {
+@media (min-width: 768px) {
     .controls {
       display: none;
     }
-  }
-  .scoreboard {
+}
+  
+.scoreboard {
     display: flex;
     gap: 20px;
     font-size: 18px;
     margin-top: 5px;
-  }
-  
-  
+}
