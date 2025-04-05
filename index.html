@@ -4,11 +4,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Juego de la Culebrita</title>
     <link rel="stylesheet" href="styles.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 </head>
 <body>
     <!-- Menú Principal -->
     <div id="mainMenu">
-        
         <h1>Snake</h1>
         <button id="playButton">Jugar</button>
         <button id="customizeButton">Personalizar</button>
@@ -29,19 +32,19 @@
     <!-- Lienzo del Juego -->
     <canvas id="gameCanvas" style="display: none;"></canvas>
 
-   <!-- Controles para móvil (Estilo Arcade) -->
-<div class="controls" style="display: none;">
-    <div class="control-row">
-        <button id="up" class="control-btn">▲</button>
+    <!-- Controles para móvil (Estilo Arcade) -->
+    <div class="controls" style="display: none;">
+        <div class="control-row">
+            <button id="up" class="control-btn">▲</button>
+        </div>
+        <div class="control-row">
+            <button id="left" class="control-btn">◀</button>
+            <button id="right" class="control-btn">▶</button>
+        </div>
+        <div class="control-row">
+            <button id="down" class="control-btn">▼</button>
+        </div>
     </div>
-    <div class="control-row">
-        <button id="left" class="control-btn">◀</button>
-        <button id="right" class="control-btn">▶</button>
-    </div>
-    <div class="control-row">
-        <button id="down" class="control-btn">▼</button>
-    </div>
-</div>
 
     <script src="script.js"></script>
 </body>
