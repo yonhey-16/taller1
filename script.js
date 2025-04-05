@@ -7,170 +7,53 @@ const firebaseConfig = {
     messagingSenderId: "989644443398",
     appId: "1:989644443398:web:d91e2e513a481533cb1887"
 };
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("DOM completamente cargado");
 
-// Inicializar Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const database = firebase.database(app);
+    // Variables globales
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const mainMenu = document.getElementById("mainMenu");
+    const menu = document.getElementById("menu");
+    const controls = document.querySelector(".controls");
+    const playButton = document.getElementById("playButton");
+    const customizeButton = document.getElementById("customizeButton");
+    const startGameButton = document.getElementById("startGameButton");
+    const snakeColorInput = document.getElementById("snakeColor");
+    const bgColorInput = document.getElementById("bgColor");
 
-// Variables globales
-let snakeColor = "#00ff00";
-let bgColor = "#000000";
-let gameInterval = null; // Para evitar múltiples intervalos
-let record = 0;
+    // Verificar que los botones existen
+    console.log(playButton, customizeButton, startGameButton);
 
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
-const mainMenu = document.getElementById("mainMenu");
-const menu = document.getElementById("menu");
-const controls = document.querySelector(".controls");
-const playButton = document.getElementById("playButton");
-const customizeButton = document.getElementById("customizeButton");
-const startGameButton = document.getElementById("startGameButton");
-const snakeColorInput = document.getElementById("snakeColor");
-const bgColorInput = document.getElementById("bgColor");
-
-// Obtener el récord desde Firebase al iniciar el juego
-function getRecordFromFirebase() {
-    const recordRef = database.ref("record");
-    recordRef.once('value').then(snapshot => {
-        const storedRecord = snapshot.val();
-        if (storedRecord) {
-            record = storedRecord;
-        }
-    });
-}
-
-// Guardar el récord en Firebase
-function saveRecordToFirebase(newRecord) {
-    const recordRef = database.ref("record");
-    recordRef.set(newRecord);
-}
-
-getRecordFromFirebase(); // Cargar el récord al iniciar
-
-// Lógica del juego
-const tileSize = 20;
-const canvasSize = Math.min(window.innerWidth * 0.9, 400);
-canvas.width = canvasSize;
-canvas.height = canvasSize;
-
-let snake = [{ x: tileSize * 5, y: tileSize * 5 }];
-let food = generateFood();
-let direction = { x: 0, y: 0 };
-let newDirection = { x: 0, y: 0 };
-let gameRunning = false;
-let applesEaten = 0;
-
-// Función para iniciar el juego
-function startGame() {
-    canvas.style.display = "block"; // Mostrar el canvas del juego
-    controls.style.display = "flex"; // Mostrar los controles
-    mainMenu.style.display = "none"; // Ocultar el menú principal
-    menu.style.display = "none"; // Ocultar el menú de personalización
-    gameRunning = true;
-    snake = [{ x: tileSize * 5, y: tileSize * 5 }];
-    direction = { x: 1, y: 0 };
-    newDirection = direction;
-    applesEaten = 0;
-    food = generateFood();
-    clearInterval(gameInterval);
-
-    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-    const speed = isMobile ? 180 : 120; 
-
-    gameInterval = setInterval(updateGame, speed);
-    document.addEventListener("keydown", changeDirection);
-    drawGame();
-}
-
-// Botón "Jugar" en el menú principal
-playButton.addEventListener("click", function () {
-    mainMenu.style.display = "none";
-    startGame();
-});
-
-// Botón "Personalizar"
-customizeButton.addEventListener("click", function () {
-    mainMenu.style.display = "none";
-    menu.style.display = "block";
-});
-
-// Botón "Jugar" en el menú de personalización
-startGameButton.addEventListener("click", function () {
-    snakeColor = snakeColorInput.value;
-    bgColor = bgColorInput.value;
-    menu.style.display = "none";
-    startGame();
-});
-
-// Funciones para el juego
-function updateGame() {
-    if (!gameRunning) return;
-
-    direction = newDirection;
-    if (direction.x === 0 && direction.y === 0) return;
-
-    let head = {
-        x: snake[0].x + direction.x * tileSize,
-        y: snake[0].y + direction.y * tileSize
-    };
-
-    if (head.x < 0 || head.y < 0 || head.x >= canvas.width || head.y >= canvas.height || snakeCollision(head)) {
-        gameOver();
-        return;
+    // Función para iniciar el juego
+    function startGame() {
+        console.log("Iniciando juego...");
+        canvas.style.display = "block"; 
+        controls.style.display = "flex"; 
+        mainMenu.style.display = "none"; 
+        menu.style.display = "none"; 
     }
 
-    if (head.x === food.x && head.y === food.y) {
-        food = generateFood();
-        applesEaten++;
-        if (applesEaten > record) {
-            record = applesEaten;
-            saveRecordToFirebase(record);
-        }
-    } else {
-        snake.pop();
-    }
-
-    snake.unshift(head);
-    drawGame();
-}
-
-// Dibujar el juego (manzana como círculo)
-function drawGame() {
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Dibujar la manzana como un círculo
-    const appleSize = tileSize * 1.5;
-    ctx.beginPath();
-    ctx.arc(food.x + tileSize / 2, food.y + tileSize / 2, appleSize / 2, 0, Math.PI * 2);
-    ctx.fillStyle = "red"; // Color de la manzana
-    ctx.fill();
-    ctx.closePath();
-
-    // Dibujar la serpiente
-    snake.forEach((segment, index) => {
-        ctx.fillStyle = index === 0 ? "yellow" : snakeColor;
-        ctx.fillRect(segment.x, segment.y, tileSize, tileSize);
+    // Botón "Jugar"
+    playButton.addEventListener("click", function () {
+        console.log("Botón Jugar presionado");
+        mainMenu.style.display = "none";
+        startGame();
     });
 
-    // Mostrar el puntaje
-    ctx.fillStyle = "white";
-    ctx.font = "18px Arial";
-    ctx.fillText(`🍏: ${applesEaten}  🎯 Récord: ${record}`, 10, 20);
-}
+    // Botón "Personalizar"
+    customizeButton.addEventListener("click", function () {
+        console.log("Botón Personalizar presionado");
+        mainMenu.style.display = "none";
+        menu.style.display = "block";
+    });
 
-// Cambiar la dirección de la serpiente
-function changeDirection(event) {
-    const key = event.key.toLowerCase();
-    
-    if ((key === "arrowup" || key === "w") && direction.y === 0) {
-        newDirection = { x: 0, y: -1 };
-    }
-    if ((key === "arrowdown" || key === "s") && direction.y === 0) {
-        newDirection = { x: 0, y: 1 };
-    }
-    if ((key === "arrowleft" || key === "a") && direction.x === 0) {
-        newDirection = { x: -1, y: 0 };
-    }
-    if ((key === "arrow
+    // Botón "Jugar" en el menú de personalización
+    startGameButton.addEventListener("click", function () {
+        console.log("Botón Jugar en Personalizar presionado");
+        snakeColor = snakeColorInput.value;
+        bgColor = bgColorInput.value;
+        menu.style.display = "none";
+        startGame();
+    });
+});
