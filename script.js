@@ -29,12 +29,6 @@ const startGameButton = document.getElementById("startGameButton");
 const snakeColorInput = document.getElementById("snakeColor");
 const bgColorInput = document.getElementById("bgColor");
 
-// Definir el tamaño de la casilla y tamaño del canvas
-const tileSize = 20;
-const canvasSize = Math.min(window.innerWidth * 0.9, 400);
-canvas.width = canvasSize;
-canvas.height = canvasSize;
-
 // Obtener el récord desde Firebase al iniciar el juego
 function getRecordFromFirebase() {
     const recordRef = database.ref("record");
@@ -55,12 +49,39 @@ function saveRecordToFirebase(newRecord) {
 getRecordFromFirebase(); // Cargar el récord al iniciar
 
 // Lógica del juego
+const tileSize = 20;
+const canvasSize = Math.min(window.innerWidth * 0.9, 400);
+canvas.width = canvasSize;
+canvas.height = canvasSize;
+
 let snake = [{ x: tileSize * 5, y: tileSize * 5 }];
 let food = generateFood();
 let direction = { x: 0, y: 0 };
 let newDirection = { x: 0, y: 0 };
 let gameRunning = false;
 let applesEaten = 0;
+
+// Función para iniciar el juego
+function startGame() {
+    canvas.style.display = "block"; // Mostrar el canvas del juego
+    controls.style.display = "flex"; // Mostrar los controles
+    mainMenu.style.display = "none"; // Ocultar el menú principal
+    menu.style.display = "none"; // Ocultar el menú de personalización
+    gameRunning = true;
+    snake = [{ x: tileSize * 5, y: tileSize * 5 }];
+    direction = { x: 1, y: 0 };
+    newDirection = direction;
+    applesEaten = 0;
+    food = generateFood();
+    clearInterval(gameInterval);
+
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    const speed = isMobile ? 180 : 120; 
+
+    gameInterval = setInterval(updateGame, speed);
+    document.addEventListener("keydown", changeDirection);
+    drawGame();
+}
 
 // Botón "Jugar" en el menú principal
 playButton.addEventListener("click", function () {
@@ -82,40 +103,7 @@ startGameButton.addEventListener("click", function () {
     startGame();
 });
 
-// Función para iniciar el juego
-function startGame() {
-    canvas.style.display = "block"; // Mostrar el canvas del juego
-    controls.style.display = "flex"; // Mostrar los controles
-    gameRunning = true;
-    snake = [{ x: tileSize * 5, y: tileSize * 5 }];
-    direction = { x: 1, y: 0 };
-    newDirection = direction;
-    applesEaten = 0;
-    food = generateFood();
-    
-    clearInterval(gameInterval);
-
-    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-    const speed = isMobile ? 180 : 120; 
-
-    gameInterval = setInterval(updateGame, speed);
-    document.addEventListener("keydown", changeDirection);
-    drawGame();
-}
-
-document.getElementById("up").addEventListener("click", () => {
-    if (direction.y === 0) newDirection = { x: 0, y: -1 };
-});
-document.getElementById("down").addEventListener("click", () => {
-    if (direction.y === 0) newDirection = { x: 0, y: 1 };
-});
-document.getElementById("left").addEventListener("click", () => {
-    if (direction.x === 0) newDirection = { x: -1, y: 0 };
-});
-document.getElementById("right").addEventListener("click", () => {
-    if (direction.x === 0) newDirection = { x: 1, y: 0 };
-});
-
+// Funciones para el juego
 function updateGame() {
     if (!gameRunning) return;
 
@@ -185,28 +173,4 @@ function changeDirection(event) {
     if ((key === "arrowleft" || key === "a") && direction.x === 0) {
         newDirection = { x: -1, y: 0 };
     }
-    if ((key === "arrowright" || key === "d") && direction.x === 0) {
-        newDirection = { x: 1, y: 0 };
-    }
-}
-
-// Generar nueva comida (manzana)
-function generateFood() {
-    return {
-        x: Math.floor(Math.random() * (canvas.width / tileSize)) * tileSize,
-        y: Math.floor(Math.random() * (canvas.height / tileSize)) * tileSize
-    };
-}
-
-// Verificar si la serpiente colisiona consigo misma
-function snakeCollision(head) {
-    return snake.some(segment => segment.x === head.x && segment.y === head.y);
-}
-
-// Fin del juego
-function gameOver() {
-    gameRunning = false;
-    clearInterval(gameInterval);
-    alert(`¡Epaaaaaa! 🍏 Comiste ${applesEaten} manzanas. 🎯 Récord: ${record}`);
-    location.reload();
-}
+    if ((key === "arrow
