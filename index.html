@@ -28,29 +28,6 @@
 
       // Configurar proveedor de GitHub
       const provider = new GithubAuthProvider();
-      
-      // Función de inicio de sesión con GitHub
-      async function signInWithGitHub() {
-        try {
-          const result = await signInWithPopup(auth, provider);
-          const user = result.user;
-          document.getElementById('current-user').textContent = `Bienvenido, ${user.displayName}`;
-          loadRecord();
-        } catch (error) {
-          console.error("Error al iniciar sesión con GitHub:", error.message);
-        }
-      }
-
-      // Función para cerrar sesión
-      function signOutUser() {
-        signOut(auth).then(() => {
-          document.getElementById('current-user').textContent = "Usuario desconectado";
-          console.log("Usuario cerrado sesión");
-        }).catch((error) => {
-          console.error("Error al cerrar sesión:", error);
-        });
-      }
-      
       window.db = db;
     </script>
   </head>
