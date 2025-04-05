@@ -1,57 +1,48 @@
-<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Snake Game</title>
-    <link rel="stylesheet" href="style.css" />
-    
-    <!-- SDKs de Firebase -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-      import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-      import { getAuth, signInWithPopup, GithubAuthProvider, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-      
-      const firebaseConfig = {
-        apiKey: "AIzaSyAzn1VrP1bY6h-kDbPD_6hbR1SmjNUWzKA",
-        authDomain: "taller1-e4a59.firebaseapp.com",
-        projectId: "taller1-e4a59",
-        storageBucket: "taller1-e4a59.firebasestorage.app",
-        messagingSenderId: "989644443398",
-        appId: "1:989644443398:web:d91e2e513a481533cb1887"
-      };
-
-      // Inicializar Firebase
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
-      const auth = getAuth();
-
-      // Configurar proveedor de GitHub
-      const provider = new GithubAuthProvider();
-      window.db = db;
-    </script>
-  </head>
-  <body>
-    <h1>🐍 Snake</h1>
-    <div class="scoreboard">
-      <p id="current-score">🍎 Puntaje: 0</p>
-      <p id="record">🥇 Récord: 0</p>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de la Culebrita</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Menú Principal -->
+    <div id="mainMenu">
+        
+        <h1>Snake</h1>
+        <button id="playButton">Jugar</button>
+        <button id="customizeButton">Personalizar</button>
     </div>
-    
-    <p id="current-user">Usuario desconectado</p>
-    
-    <div class="controls">
-      <button class="btn" onclick="changeDirection('up')">⬆️</button><br>
-      <button class="btn" onclick="changeDirection('left')">⬅️</button>
-      <button class="btn" onclick="changeDirection('down')">⬇️</button>
-      <button class="btn" onclick="changeDirection('right')">➡️</button>
-    </div>
-    
-    <button onclick="signInWithGitHub()">Iniciar sesión con GitHub</button>
-    <button onclick="signOutUser()">Cerrar sesión</button>
 
-    <canvas id="game" width="300" height="300"></canvas>
+    <!-- Menú de Personalización -->
+    <div id="menu" style="display: none;">
+        <h2>Personalización</h2>
+        <label for="snakeColor">Color de la serpiente:</label>
+        <input type="color" id="snakeColor" value="#00ff00">
+
+        <label for="bgColor">Color de fondo:</label>
+        <input type="color" id="bgColor" value="#000000">
+
+        <button id="startGameButton">Jugar</button>
+    </div>
+
+    <!-- Lienzo del Juego -->
+    <canvas id="gameCanvas" style="display: none;"></canvas>
+
+   <!-- Controles para móvil (Estilo Arcade) -->
+<div class="controls" style="display: none;">
+    <div class="control-row">
+        <button id="up" class="control-btn">▲</button>
+    </div>
+    <div class="control-row">
+        <button id="left" class="control-btn">◀</button>
+        <button id="right" class="control-btn">▶</button>
+    </div>
+    <div class="control-row">
+        <button id="down" class="control-btn">▼</button>
+    </div>
+</div>
 
     <script src="script.js"></script>
-  </body>
+</body>
 </html>
