@@ -12,7 +12,6 @@ body {
     padding: 0;
 }
 
-
 /* Menús centrados */
 #mainMenu, #menu {
     display: flex;
@@ -31,7 +30,7 @@ body {
     box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.3);
 }
 
-/* Botones dentro del menú */
+/* Botones */
 #mainMenu button, #menu button {
     width: 100%;
     padding: 10px;
@@ -49,14 +48,14 @@ body {
     background-color: #e64a19;
 }
 
-/* Centrar el canvas del juego */
+/* Centrar el canvas */
 canvas {
     display: block;
     margin: auto;
     border: 2px solid white;
 }
 
-/* Centrar controles en móviles */
+/* Controles móviles */
 .controls {
     display: flex;
     flex-direction: column;
@@ -80,8 +79,8 @@ canvas {
     font-size: 30px;
     font-weight: bold;
     color: white;
-    background: #ff5722; /* Naranja arcade */
-    border: 3px solid #ffcc00; /* Amarillo neón */
+    background: #ff5722;
+    border: 3px solid #ffcc00;
     border-radius: 8px;
     box-shadow: 0px 4px 8px rgba(255, 204, 0, 0.7);
     cursor: pointer;
@@ -90,45 +89,5 @@ canvas {
 
 .control-btn:active {
     transform: scale(0.9);
-    background: #e64a19; /* Naranja más oscuro al presionar */
-}
-
-
-.menu {
-    background: rgba(0, 0, 0, 0.9);
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.3);
-    width: 300px;
-    text-align: center;
-}
-
-h2 {
-    margin-bottom: 15px;
-    font-size: 20px;
-    color: white;
-}
-
-.opciones {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 10px 0;
-}
-
-.opciones label {
-    font-size: 16px;
-    font-weight: bold;
-    color: white;
-}
-
-input[type="color"] {
-    border: none;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-}ne;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
+    background: #e64a19;
 }
