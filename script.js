@@ -29,9 +29,30 @@ const startGameButton = document.getElementById("startGameButton");
 const snakeColorInput = document.getElementById("snakeColor");
 const bgColorInput = document.getElementById("bgColor");
 
-// Imagen de la manzana
-const appleImage = new Image();
-appleImage.src = "manzana.png"; // Asegúrate de tener esta imagen en tu proyecto
+function drawGame() {
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Dibujar la manzana como un círculo
+    const appleSize = tileSize * 1.5;
+    ctx.beginPath();
+    ctx.arc(food.x + tileSize / 2, food.y + tileSize / 2, appleSize / 2, 0, Math.PI * 2);
+    ctx.fillStyle = "red"; // Color de la manzana
+    ctx.fill();
+    ctx.closePath();
+
+    // Dibujar la serpiente
+    snake.forEach((segment, index) => {
+        ctx.fillStyle = index === 0 ? "yellow" : snakeColor;
+        ctx.fillRect(segment.x, segment.y, tileSize, tileSize);
+    });
+
+    // Mostrar el puntaje
+    ctx.fillStyle = "white";
+    ctx.font = "18px Arial";
+    ctx.fillText(`🍏: ${applesEaten}  🎯 Récord: ${record}`, 10, 20);
+}
+
 
 const tileSize = 20;
 const canvasSize = Math.min(window.innerWidth * 0.9, 400);
