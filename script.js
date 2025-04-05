@@ -1,11 +1,11 @@
 // Firebase configuración (reemplaza con tu propia configuración de Firebase)
 const firebaseConfig = {
     apiKey: "AIzaSyAzn1VrP1bY6h-kDbPD_6hbR1SmjNUWzKA",
-  authDomain: "taller1-e4a59.firebaseapp.com",
-  projectId: "taller1-e4a59",
-  storageBucket: "taller1-e4a59.firebasestorage.app",
-  messagingSenderId: "989644443398",
-  appId: "1:989644443398:web:d91e2e513a481533cb1887"
+    authDomain: "taller1-e4a59.firebaseapp.com",
+    projectId: "taller1-e4a59",
+    storageBucket: "taller1-e4a59.firebasestorage.app",
+    messagingSenderId: "989644443398",
+    appId: "1:989644443398:web:d91e2e513a481533cb1887"
 };
 
 // Inicializar Firebase
@@ -29,31 +29,7 @@ const startGameButton = document.getElementById("startGameButton");
 const snakeColorInput = document.getElementById("snakeColor");
 const bgColorInput = document.getElementById("bgColor");
 
-function drawGame() {
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Dibujar la manzana como un círculo
-    const appleSize = tileSize * 1.5;
-    ctx.beginPath();
-    ctx.arc(food.x + tileSize / 2, food.y + tileSize / 2, appleSize / 2, 0, Math.PI * 2);
-    ctx.fillStyle = "red"; // Color de la manzana
-    ctx.fill();
-    ctx.closePath();
-
-    // Dibujar la serpiente
-    snake.forEach((segment, index) => {
-        ctx.fillStyle = index === 0 ? "yellow" : snakeColor;
-        ctx.fillRect(segment.x, segment.y, tileSize, tileSize);
-    });
-
-    // Mostrar el puntaje
-    ctx.fillStyle = "white";
-    ctx.font = "18px Arial";
-    ctx.fillText(`🍏: ${applesEaten}  🎯 Récord: ${record}`, 10, 20);
-}
-
-
+// Definir el tamaño de la casilla y tamaño del canvas
 const tileSize = 20;
 const canvasSize = Math.min(window.innerWidth * 0.9, 400);
 canvas.width = canvasSize;
@@ -106,9 +82,10 @@ startGameButton.addEventListener("click", function () {
     startGame();
 });
 
+// Función para iniciar el juego
 function startGame() {
-    canvas.style.display = "block";
-    controls.style.display = "flex";
+    canvas.style.display = "block"; // Mostrar el canvas del juego
+    controls.style.display = "flex"; // Mostrar los controles
     gameRunning = true;
     snake = [{ x: tileSize * 5, y: tileSize * 5 }];
     direction = { x: 1, y: 0 };
@@ -170,23 +147,32 @@ function updateGame() {
     drawGame();
 }
 
+// Dibujar el juego (manzana como círculo)
 function drawGame() {
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+    // Dibujar la manzana como un círculo
     const appleSize = tileSize * 1.5;
-    ctx.drawImage(appleImage, food.x - (appleSize - tileSize) / 2, food.y - (appleSize - tileSize) / 2, appleSize, appleSize);
+    ctx.beginPath();
+    ctx.arc(food.x + tileSize / 2, food.y + tileSize / 2, appleSize / 2, 0, Math.PI * 2);
+    ctx.fillStyle = "red"; // Color de la manzana
+    ctx.fill();
+    ctx.closePath();
 
+    // Dibujar la serpiente
     snake.forEach((segment, index) => {
         ctx.fillStyle = index === 0 ? "yellow" : snakeColor;
         ctx.fillRect(segment.x, segment.y, tileSize, tileSize);
     });
 
+    // Mostrar el puntaje
     ctx.fillStyle = "white";
     ctx.font = "18px Arial";
     ctx.fillText(`🍏: ${applesEaten}  🎯 Récord: ${record}`, 10, 20);
 }
 
+// Cambiar la dirección de la serpiente
 function changeDirection(event) {
     const key = event.key.toLowerCase();
     
@@ -204,6 +190,7 @@ function changeDirection(event) {
     }
 }
 
+// Generar nueva comida (manzana)
 function generateFood() {
     return {
         x: Math.floor(Math.random() * (canvas.width / tileSize)) * tileSize,
@@ -211,10 +198,12 @@ function generateFood() {
     };
 }
 
+// Verificar si la serpiente colisiona consigo misma
 function snakeCollision(head) {
     return snake.some(segment => segment.x === head.x && segment.y === head.y);
 }
 
+// Fin del juego
 function gameOver() {
     gameRunning = false;
     clearInterval(gameInterval);
