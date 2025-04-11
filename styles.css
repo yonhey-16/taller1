@@ -48,11 +48,12 @@ body {
     background-color: #e64a19;
 }
 
-/* Centrar el canvas */
+/* Canvas del juego */
 canvas {
     display: block;
     margin: auto;
     border: 2px solid white;
+    background-color: black;
 }
 
 /* Controles móviles */
