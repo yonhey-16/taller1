@@ -1,164 +1,130 @@
 // Configuración de Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyAzn1VrP1bY6h-kDbPD_6hbR1SmjNUWzKA",
-    authDomain: "taller1-e4a59.firebaseapp.com",
-    databaseURL: "https://taller1-e4a59-default-rtdb.firebaseio.com",
-    projectId: "taller1-e4a59",
-    storageBucket: "taller1-e4a59.appspot.com",
-    messagingSenderId: "989644443398",
-    appId: "1:989644443398:web:d91e2e513a481533cb1887"
+  apiKey: "AIzaSyAzn1VrP1bY6h-kDbPD_6hbR1SmjNUWzKA",
+  authDomain: "taller1-e4a59.firebaseapp.com",
+  databaseURL: "https://taller1-e4a59-default-rtdb.firebaseio.com",
+  projectId: "taller1-e4a59",
+  storageBucket: "taller1-e4a59.appspot.com",
+  messagingSenderId: "989644443398",
+  appId: "1:989644443398:web:d91e2e513a481533cb1887"
 };
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
 
-document.addEventListener("DOMContentLoaded", function () {
-    const canvas = document.getElementById("gameCanvas");
-    const ctx = canvas.getContext("2d");
-    const mainMenu = document.getElementById("mainMenu");
-    const menu = document.getElementById("menu");
-    const controls = document.querySelector(".controls");
-    const playButton = document.getElementById("playButton");
-    const customizeButton = document.getElementById("customizeButton");
-    const startGameButton = document.getElementById("startGameButton");
-    const snakeColorInput = document.getElementById("snakeColor");
-    const bgColorInput = document.getElementById("bgColor");
+// Inicializar Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const database = firebase.database(app);
 
-    let snakeColor = "#00ff00";
-    let bgColor = "#000000";
+// Variables del juego
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const scoreElement = document.getElementById('score');
+const highScoreElement = document.getElementById('highScore');
+const restartBtn = document.getElementById('restartBtn');
 
-    let snake = [];
-    let direction = "right";
-    let food = {};
-    let score = 0;
-    let bestScore = 0;
-    let gameInterval;
+const gridSize = 20;
+let snake = [{ x: 2, y: 2 }];
+let direction = { x: 1, y: 0 };
+let food = { x: 5, y: 5 };
+let score = 0;
+let highScore = 0;
+let gameInterval;
 
-    // Crear elementos de puntuación
-    const scoreDisplay = document.createElement("div");
-    scoreDisplay.style.position = "absolute";
-    scoreDisplay.style.top = "10px";
-    scoreDisplay.style.right = "10px";
-    scoreDisplay.style.color = "white";
-    scoreDisplay.style.fontSize = "20px";
-    document.body.appendChild(scoreDisplay);
+// Ajustar el tamaño del canvas
+canvas.width = 400;
+canvas.height = 400;
 
-    function drawGame() {
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+// Función para dibujar el juego
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // Dibujar serpiente
-        ctx.fillStyle = snakeColor;
-        snake.forEach(segment => {
-            ctx.fillRect(segment.x, segment.y, 20, 20);
-        });
+  // Dibujar la serpiente
+  ctx.fillStyle = 'lime';
+  snake.forEach(segment => {
+    ctx.fillRect(segment.x * gridSize, segment.y * gridSize, gridSize, gridSize);
+  });
 
-        // Dibujar comida
-        ctx.fillStyle = "red";
-        ctx.fillRect(food.x, food.y, 20, 20);
+  // Dibujar la comida
+  ctx.fillStyle = 'red';
+  ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize, gridSize);
 
-        // Mostrar puntaje
-        scoreDisplay.innerText = `Puntaje: ${score} | Récord: ${bestScore}`;
-    }
+  // Actualizar la puntuación
+  scoreElement.textContent = score;
+  highScoreElement.textContent = highScore;
+}
 
-    function moveSnake() {
-        const head = { ...snake[0] };
-        if (direction === "right") head.x += 20;
-        if (direction === "left") head.x -= 20;
-        if (direction === "up") head.y -= 20;
-        if (direction === "down") head.y += 20;
+// Función para actualizar la posición de la serpiente
+function update() {
+  const head = { ...snake[0] };
+  head.x += direction.x;
+  head.y += direction.y;
 
-        // Colisión con paredes o con el cuerpo
-        if (
-            head.x < 0 || head.x >= canvas.width ||
-            head.y < 0 || head.y >= canvas.height ||
-            snake.some(seg => seg.x === head.x && seg.y === head.y)
-        ) {
-            endGame();
-            return;
-        }
+  // Verificar colisiones con los bordes
+  if (head.x < 0 || head.x >= canvas.width / gridSize || head.y < 0 || head.y >= canvas.height / gridSize) {
+    return endGame();
+  }
 
-        snake.unshift(head);
+  // Verificar colisiones con el cuerpo
+  if (snake.some((segment, index) => index !== 0 && segment.x === head.x && segment.y === head.y)) {
+    return endGame();
+  }
 
-        // Comer comida
-        if (head.x === food.x && head.y === food.y) {
-            score++;
-            placeFood();
-        } else {
-            snake.pop();
-        }
+  // Agregar la nueva cabeza al principio del arreglo
+  snake.unshift(head);
 
-        drawGame();
-    }
+  // Verificar si la serpiente come la comida
+  if (head.x === food.x && head.y === food.y) {
+    score++;
+    spawnFood();
+    updateHighScore();
+  } else {
+    // Eliminar el último segmento de la serpiente
+    snake.pop();
+  }
 
-    function placeFood() {
-        food = {
-            x: Math.floor(Math.random() * (canvas.width / 20)) * 20,
-            y: Math.floor(Math.random() * (canvas.height / 20)) * 20,
-        };
-    }
+  draw();
+}
 
-    function startGame() {
-        canvas.width = 400;
-        canvas.height = 400;
-        mainMenu.style.display = "none";
-        menu.style.display = "none";
-        canvas.style.display = "block";
-        controls.style.display = "flex";
-        score = 0;
-        direction = "right";
-        snake = [{ x: 200, y: 200 }];
-        placeFood();
-        getBestScore();
-        gameInterval = setInterval(moveSnake, 150);
-    }
+// Función para generar comida en una posición aleatoria
+function spawnFood() {
+  food.x = Math.floor(Math.random() * (canvas.width / gridSize));
+  food.y = Math.floor(Math.random() * (canvas.height / gridSize));
+}
 
-    function endGame() {
-        clearInterval(gameInterval);
-        if (score > bestScore) {
-            saveBestScore(score);
-        }
-        alert(`¡Fin del juego! Puntaje: ${score}`);
-        canvas.style.display = "none";
-        controls.style.display = "none";
-        mainMenu.style.display = "block";
-    }
+// Función para finalizar el juego
+function endGame() {
+  clearInterval(gameInterval);
+  alert('Juego terminado. Tu puntuación fue ' + score);
+  saveHighScore();
+  resetGame();
+}
 
-    function getBestScore() {
-        db.ref("record").once("value").then(snapshot => {
-            bestScore = snapshot.val() || 0;
-        });
-    }
+// Función para guardar la puntuación más alta en Firebase
+function saveHighScore() {
+  const highScoreRef = database.ref('highScore');
+  highScoreRef.set(highScore);
+}
 
-    function saveBestScore(score) {
-        db.ref("record").set(score);
-    }
+// Función para actualizar la puntuación más alta
+function updateHighScore() {
+  if (score > highScore) {
+    highScore = score;
+    highScoreElement.textContent = highScore;
+  }
+}
 
-    // Eventos del menú
-    playButton.addEventListener("click", startGame);
+// Función para reiniciar el juego
+function resetGame() {
+  snake = [{ x: 2, y: 2 }];
+  direction = { x: 1, y: 0 };
+  food = { x: 5, y: 5 };
+  score = 0;
+  scoreElement.textContent = score;
+  gameInterval = setInterval(update, 100);
+}
 
-    customizeButton.addEventListener("click", function () {
-        mainMenu.style.display = "none";
-        menu.style.display = "block";
-    });
-
-    startGameButton.addEventListener("click", function () {
-        snakeColor = snakeColorInput.value;
-        bgColor = bgColorInput.value;
-        startGame();
-    });
-
-    // Eventos de teclado
-    document.addEventListener("keydown", function (e) {
-        const key = e.key;
-        if (key === "ArrowUp" && direction !== "down") direction = "up";
-        if (key === "ArrowDown" && direction !== "up") direction = "down";
-        if (key === "ArrowLeft" && direction !== "right") direction = "left";
-        if (key === "ArrowRight" && direction !== "left") direction = "right";
-    });
-
-    // Controles móviles
-    document.getElementById("up").addEventListener("click", () => { if (direction !== "down") direction = "up"; });
-    document.getElementById("down").addEventListener("click", () => { if (direction !== "up") direction = "down"; });
-    document.getElementById("left").addEventListener("click", () => { if (direction !== "right") direction = "left"; });
-    document.getElementById("right").addEventListener("click", () => { if (direction !== "left") direction = "right"; });
-});
+// Función para manejar los controles táctiles en dispositivos móviles
+function handleTouchMove(event) {
+  const touch = event.touches[0];
+  const x = touch.clientX - canvas.offsetLeft;
+  const
+::contentReference[oaicite:0]{index=0}
+ 
